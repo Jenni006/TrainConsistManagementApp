@@ -1,61 +1,58 @@
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UseCase13TrainConsistMgmntTest {
+class UseCase14TrainConsistMgmntTest {
 
-    private List<UseCase13TrainConsistMgmnt.Bogie> bogies;
-
-    @BeforeEach
-    void setUp() {
-        bogies = new ArrayList<>();
-        bogies.add(new UseCase13TrainConsistMgmnt.Bogie("Sleeper", 72));
-        bogies.add(new UseCase13TrainConsistMgmnt.Bogie("General", 40));
-        bogies.add(new UseCase13TrainConsistMgmnt.Bogie("AC Chair", 80));
+    @Test
+    void testException_ValidCapacityCreation() {
+        // Verifies bogie with capacity > 0 is instantiated without exception
+        assertDoesNotThrow(() -> {
+            new UseCase14TrainConsistMgmnt.PassengerBogie("Sleeper", 72);
+        });
     }
 
     @Test
-    void testLoopFilteringLogic() {
-        List<UseCase13TrainConsistMgmnt.Bogie> filtered = new ArrayList<>();
-        for (UseCase13TrainConsistMgmnt.Bogie b : bogies) {
-            if (b.capacity > 60) filtered.add(b);
+    void testException_NegativeCapacityThrowsException() {
+        // Verifies capacity value -10 triggers the custom exception
+        Exception exception = assertThrows(UseCase14TrainConsistMgmnt.InvalidCapacityException.class, () -> {
+            new UseCase14TrainConsistMgmnt.PassengerBogie("AC Chair", -10);
+        });
+        assertEquals("Capacity must be greater than zero", exception.getMessage());
+    }
+
+    @Test
+    void testException_ZeroCapacityThrowsException() {
+        // Verifies zero capacity is treated as invalid input
+        assertThrows(UseCase14TrainConsistMgmnt.InvalidCapacityException.class, () -> {
+            new UseCase14TrainConsistMgmnt.PassengerBogie("General", 0);
+        });
+    }
+
+    @Test
+    void testException_ExceptionMessageValidation() {
+        // Verifies the correct error message is returned
+        try {
+            new UseCase14TrainConsistMgmnt.PassengerBogie("First Class", -5);
+        } catch (UseCase14TrainConsistMgmnt.InvalidCapacityException e) {
+            assertEquals("Capacity must be greater than zero", e.getMessage());
         }
-        assertEquals(2, filtered.size());
     }
 
     @Test
-    void testStreamFilteringLogic() {
-        List<UseCase13TrainConsistMgmnt.Bogie> filtered = bogies.stream()
-                .filter(b -> b.capacity > 60)
-                .collect(Collectors.toList());
-        assertEquals(2, filtered.size());
+    void testException_ObjectIntegrityAfterCreation() throws UseCase14TrainConsistMgmnt.InvalidCapacityException {
+        // Verifies properties match constructor parameters after successful creation
+        UseCase14TrainConsistMgmnt.PassengerBogie bogie = new UseCase14TrainConsistMgmnt.PassengerBogie("Sleeper", 72);
+        assertEquals("Sleeper", bogie.type);
+        assertEquals(72, bogie.capacity);
     }
 
     @Test
-    void testLoopAndStreamResultsMatch() {
-        // Loop result
-        List<UseCase13TrainConsistMgmnt.Bogie> loopRes = new ArrayList<>();
-        for (UseCase13TrainConsistMgmnt.Bogie b : bogies) {
-            if (b.capacity > 60) loopRes.add(b);
-        }
-
-        // Stream result
-        List<UseCase13TrainConsistMgmnt.Bogie> streamRes = bogies.stream()
-                .filter(b -> b.capacity > 60)
-                .collect(Collectors.toList());
-
-        assertEquals(loopRes.size(), streamRes.size());
-    }
-
-    @Test
-    void testExecutionTimeMeasurement() {
-        long start = System.nanoTime();
-        // simulate a small delay or operation
-        Math.sqrt(25.0);
-        long end = System.nanoTime();
-        assertTrue((end - start) >= 0);
+    void testException_MultipleValidBogiesCreation() {
+        // Verifies multiple valid bogies can be created without triggering exceptions
+        assertDoesNotThrow(() -> {
+            new UseCase14TrainConsistMgmnt.PassengerBogie("Sleeper", 72);
+            new UseCase14TrainConsistMgmnt.PassengerBogie("AC Chair", 40);
+            new UseCase14TrainConsistMgmnt.PassengerBogie("First Class", 24);
+        });
     }
 }
