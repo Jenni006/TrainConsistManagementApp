@@ -1,8 +1,8 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class UseCase7TrainConsistManagement {
+public class UseCase8TrainConsistMgmnt {
 
     static class Bogie {
         String name;
@@ -21,7 +21,7 @@ public class UseCase7TrainConsistManagement {
 
     public static void main(String[] args) {
         System.out.println("===============================================");
-        System.out.println(" UC7 - Sort Bogies by Capacity (Comparator) ");
+        System.out.println(" UC8 - Filter Passenger Bogies Using Streams ");
         System.out.println("===============================================\n");
 
         List<Bogie> bogies = new ArrayList<>();
@@ -30,16 +30,11 @@ public class UseCase7TrainConsistManagement {
         bogies.add(new Bogie("First Class", 24));
         bogies.add(new Bogie("General", 90));
 
-        System.out.println("Before Sorting:");
-        for (Bogie b : bogies) {
-            System.out.println(b);
-        }
+        List<Bogie> filteredBogies = bogies.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
 
-        bogies.sort(Comparator.comparingInt(b -> b.capacity));
-
-        System.out.println("\nAfter Sorting by Capacity (Ascending):");
-        for (Bogie b : bogies) {
-            System.out.println(b);
-        }
+        System.out.println("Filtered Bogies (Capacity > 60):");
+        filteredBogies.forEach(System.out::println);
     }
 }
