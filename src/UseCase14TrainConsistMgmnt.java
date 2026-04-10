@@ -1,69 +1,61 @@
-/**
- * ====================================================================
- * MAIN CLASS - UseCase14TrainConsistMgmnt
- * ====================================================================
- */
-public class UseCase14TrainConsistMgmnt {
 
-    // ---- CUSTOM EXCEPTION ----
-    // Extends Exception to represent a checked domain error
+public class UseCase14TrainConsistMgmnt {
     static class InvalidCapacityException extends Exception {
         public InvalidCapacityException(String message) {
-            super(message); // Passes message to the parent Exception class
+            super(message); // Passes message to Exception parent class
         }
     }
 
-    // Passenger Bogie model with validation logic inside the constructor
+    // Passenger Bogie model with internal validation
     static class PassengerBogie {
-        String type;
+        String name;
         int capacity;
 
-        // Constructor declares that it may throw the custom exception
-        PassengerBogie(String type, int capacity) throws InvalidCapacityException {
-            // Fail-Fast Validation: Detects errors early
+        // Constructor uses 'throws' to declare checked exception
+        PassengerBogie(String name, int capacity) throws InvalidCapacityException {
+            // Fail-Fast Validation rule: Capacity must be > 0
             if (capacity <= 0) {
-                throw new InvalidCapacityException("Capacity must be greater than zero"); // Explicitly raises error
+                throw new InvalidCapacityException("Capacity must be greater than zero");
             }
-            this.type = type;
+            this.name = name;
             this.capacity = capacity;
         }
 
         @Override
         public String toString() {
-            return String.format("Bogie Type: %s, Capacity: %d", type, capacity);
+            return "Bogie: " + name + " | Capacity: " + capacity;
         }
     }
 
     public static void main(String[] args) {
-        System.out.println("=================================================");
-        System.out.println(" UC14 - Prevent Invalid Bogies (Custom Exception) ");
-        System.out.println("=================================================\n");
+        System.out.println("===============================================");
+        System.out.println(" UC14 - Handle Invalid Bogie Capacity (Custom Exception) ");
+        System.out.println("===============================================\n");
 
+        // CASE 1: Valid Capacity creation
         try {
-            System.out.println("Attempting to create valid bogie: Sleeper (72 seats)...");
             PassengerBogie validBogie = new PassengerBogie("Sleeper", 72);
-            System.out.println("Success: " + validBogie);
+            System.out.println("CREATED: " + validBogie);
         } catch (InvalidCapacityException e) {
             System.out.println("Error: " + e.getMessage());
         }
 
+        // CASE 2: Invalid Capacity (Zero) creation
         try {
-            System.out.println("\nAttempting to create invalid bogie: General (0 seats)...");
+            System.out.println("\nAttempting to create bogie with 0 capacity...");
             PassengerBogie invalidBogie = new PassengerBogie("General", 0);
-            System.out.println("Success: " + invalidBogie);
         } catch (InvalidCapacityException e) {
-            // System continues execution safely after catching the error
             System.err.println("CAUGHT EXCEPTION: " + e.getMessage());
         }
 
+        // CASE 3: Invalid Capacity (Negative) creation
         try {
-            System.out.println("\nAttempting to create invalid bogie: AC Chair (-10 seats)...");
+            System.out.println("\nAttempting to create bogie with -10 capacity...");
             PassengerBogie negativeBogie = new PassengerBogie("AC Chair", -10);
-            System.out.println("Success: " + negativeBogie);
         } catch (InvalidCapacityException e) {
             System.err.println("CAUGHT EXCEPTION: " + e.getMessage());
         }
 
-        System.out.println("\nUC14 execution completed safely.");
+        System.out.println("\nSystem continues execution safely...");
     }
 }
